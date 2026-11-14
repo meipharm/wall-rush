@@ -4,7 +4,7 @@ import { GameScreen } from './screens/GameScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { RpsScreen } from './screens/RpsScreen';
 import { RulesScreen } from './screens/RulesScreen';
-import { loadSoundPref, playEventSound, saveSoundPref } from './sound';
+import { installAudioUnlock, loadSoundPref, playClick, playEventSound, saveSoundPref, unlockAudio } from './sound';
 
 export default function App() {
   const [state, dispatch] = useReducer(gameReducer, undefined, createInitialState);
@@ -15,11 +15,30 @@ export default function App() {
     if (soundOn && state.event.seq > 0) playEventSound(state.event.type);
   }, [state.event.seq]); // 只依事件序號觸發
 
+  // 第一次互動時解鎖音訊（瀏覽器自動播放政策）
+  useEffect(() => {
+    installAudioUnlock();
+  }, []);
+
+  // 一般按鈕的點擊音（遊戲動作本身另有音效）
+  useEffect(() => {
+    if (!soundOn) return;
+    const onClick = (e: MouseEvent) => {
+      const el = e.target as HTMLElement | null;
+      if (el?.closest('.btn, .mode-btn')) playClick();
+    };
+    window.addEventListener('click', onClick, true);
+    return () => window.removeEventListener('click', onClick, true);
+  }, [soundOn]);
+
   const toggleSound = () => {
-    setSoundOn((on) => {
-      saveSoundPref(!on);
-      return !on;
-    });
+    const next = !soundOn;
+    setSoundOn(next);
+    saveSoundPref(next);
+    if (next) {
+      unlockAudio();
+      playEventSound('select'); // 開啟時試播，確認聽得到
+    }
   };
 
   const goHome = () => dispatch({ type: 'GO_HOME' });
