@@ -61,7 +61,14 @@ src/
 
 - 純前端靜態網站，無後端、無資料庫、無帳號、無第三方 API、無金鑰。
 - 不收集或傳送任何個人資料；唯一的本機儲存是 `localStorage` 的音效開關偏好（`wall-rush:sound`）。
-- 開發時只在本機執行；若部署到公開靜態主機，公開的僅是遊戲本身，無計費服務。
+- 公開範圍：原始碼放在公開 GitHub repo，遊戲由 GitHub Pages 公開提供（任何人可遊玩）。
+- 計費：公開 repo 的 GitHub Pages 與 GitHub Actions 免費；不使用任何可能計費的服務。
+- 訪客資訊：瀏覽 GitHub Pages 時，訪客 IP 等連線資訊由 GitHub 處理；遊戲本身不另外記錄。
+- 發布前已做安全盤點（2026-11-14）：無網路呼叫、無第三方端點、無憑證、無個資；commit 作者使用 GitHub noreply 信箱。
+
+## GitHub Pages 部署
+
+推送到 `main` 後，`.github/workflows/deploy.yml` 會自動執行測試、建置並部署到 GitHub Pages。
 
 ## 技術預設與待確認事項
 
